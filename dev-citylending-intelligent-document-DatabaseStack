@@ -1,0 +1,701 @@
+{
+  "Resources": {
+    "CustomResourceHandlerServiceRole41AEC181": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomResourceHandlerE8FB56BA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "27e0dafbc8f83e4948be53701d30b7b59e143c991ce82994c77cae6970050907.zip"
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerServiceRole41AEC181",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "CustomResourceHandlerServiceRole41AEC181"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MainTable9B409A9C": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi1pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi1sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi2pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi2sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi3pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi3sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi4pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi4sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi5pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi5sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi6pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi6sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi7pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi7sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi8pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi8sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi9pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi9sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi10pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsi10sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic1pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic1sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic2pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic2sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic3pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic3sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic4pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic4sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic5pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic5sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic6pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic6sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic7pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic7sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic8pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic8sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic9pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic9sk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic10pk",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "gsic10sk",
+            "AttributeType": "S"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "gsi1",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi1pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi1sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi2",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi2pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi2sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi3",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi3pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi3sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi4",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi4pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi4sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi5",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi5pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi5sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi6",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi6pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi6sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi7",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi7pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi7sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi8",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi8pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi8sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi9",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi9pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi9sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsi10",
+            "KeySchema": [
+              {
+                "AttributeName": "gsi10pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsi10sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic1",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic1pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic1sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic2",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic2pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic2sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic3",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic3pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic3sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic4",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic4pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic4sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic5",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic5pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic5sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic6",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic6pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic6sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic7",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic7pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic7sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic8",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic8pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic8sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic9",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic9pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic9sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          },
+          {
+            "IndexName": "gsic10",
+            "KeySchema": [
+              {
+                "AttributeName": "gsic10pk",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "gsic10sk",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "pk",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "sk",
+            "KeyType": "RANGE"
+          }
+        ],
+        "PointInTimeRecoverySpecification": {
+          "PointInTimeRecoveryEnabled": true
+        },
+        "TableName": "dev-citylending-intelligent-document-MainTable",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "MainTableParametertableNameCF41B8DC": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/sst/citylending-intelligent-document/dev/Table/MainTable/tableName",
+        "Tags": {
+          "sst:app": "citylending-intelligent-document",
+          "sst:name": "citylending-intelligent-document",
+          "sst:stage": "dev"
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "MainTable9B409A9C"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "SSTMetadata": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "{\"app\":\"citylending-intelligent-document\",\"stage\":\"dev\",\"version\":\"2.43.7\",\"metadata\":[{\"id\":\"MainTable\",\"addr\":\"c851686d7056f3321cde4edffa0ab02869efe6f6b9\",\"stack\":\"dev-citylending-intelligent-document-DatabaseStack\",\"type\":\"Table\",\"data\":{\"tableName\":\"",
+            {
+              "Ref": "MainTable9B409A9C"
+            },
+            "\",\"consumers\":[]}}]}"
+          ]
+        ]
+      }
+    },
+    "ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42": {
+      "Value": {
+        "Fn::GetAtt": [
+          "MainTable9B409A9C",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+      }
+    },
+    "ExportsOutputRefMainTable9B409A9CDFA857D7": {
+      "Value": {
+        "Ref": "MainTable9B409A9C"
+      },
+      "Export": {
+        "Name": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputRefMainTable9B409A9CDFA857D7"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}
