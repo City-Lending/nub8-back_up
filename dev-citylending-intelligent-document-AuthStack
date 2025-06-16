@@ -1,0 +1,1230 @@
+{
+  "Resources": {
+    "CustomResourceHandlerServiceRole41AEC181": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomResourceHandlerE8FB56BA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "191208f96f652a2cc03c89f2fc4fd7a1e6c26b12893a5def4d246d86b729ca4d.zip"
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerServiceRole41AEC181",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "CustomResourceHandlerServiceRole41AEC181"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackApi91E32A8C": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "CorsConfiguration": {
+          "AllowCredentials": false,
+          "AllowHeaders": [
+            "*"
+          ],
+          "AllowMethods": [
+            "*"
+          ],
+          "AllowOrigins": [
+            "*"
+          ]
+        },
+        "Name": "dev-citylending-intelligent-document-ApiAuthStack",
+        "ProtocolType": "HTTP",
+        "Tags": {
+          "sst:app": "citylending-intelligent-document",
+          "sst:name": "citylending-intelligent-document",
+          "sst:stage": "dev"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackApiDefaultStage9666AAA2": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "AccessLogSettings": {
+          "DestinationArn": {
+            "Fn::GetAtt": [
+              "ApiAuthStackLogGroup5B26C74A",
+              "Arn"
+            ]
+          },
+          "Format": "{\"requestTime\":\"$context.requestTime\",\"requestId\":\"$context.requestId\",\"httpMethod\":\"$context.httpMethod\",\"path\":\"$context.path\",\"routeKey\":\"$context.routeKey\",\"status\":$context.status,\"responseLatency\":$context.responseLatency,\"integrationRequestId\":\"$context.integration.requestId\",\"integrationStatus\":\"$context.integration.status\",\"integrationLatency\":\"$context.integration.latency\",\"integrationServiceStatus\":\"$context.integration.integrationStatus\",\"ip\":\"$context.identity.sourceIp\",\"userAgent\":\"$context.identity.userAgent\"}"
+        },
+        "ApiId": {
+          "Ref": "ApiAuthStackApi91E32A8C"
+        },
+        "AutoDeploy": true,
+        "StageName": "$default",
+        "Tags": {
+          "sst:app": "citylending-intelligent-document",
+          "sst:name": "citylending-intelligent-document",
+          "sst:stage": "dev"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLogGroup5B26C74A": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/vendedlogs/apis/dev-citylending-intelligent-document-ApiAuthStack-",
+              {
+                "Ref": "ApiAuthStackApi91E32A8C"
+              },
+              "/default"
+            ]
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaGETsessionServiceRoleA239BB77": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaGETsessionServiceRoleDefaultPolicy86D99017": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ApiAuthStackLambdaGETsessionServiceRoleDefaultPolicy86D99017",
+        "Roles": [
+          {
+            "Ref": "ApiAuthStackLambdaGETsessionServiceRoleA239BB77"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaGETsession26A4EF37": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "d2f426445c42ef0a4fa8eed36b9856dc560ffbe29703fde33d6514d02ee4ce21.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "citylending-intelligent-document",
+            "STAGE": "dev",
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "SST_APP": "citylending-intelligent-document",
+            "SST_STAGE": "dev",
+            "SST_SSM_PREFIX": "/sst/citylending-intelligent-document/dev/",
+            "SST_Parameter_value_ENV_JWT_SECRET": "shhhhh",
+            "SST_Table_tableName_MainTable": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputRefMainTable9B409A9CDFA857D7"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Handler": "packages/functions/src/auth/session.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "ApiAuthStackLambdaGETsessionServiceRoleA239BB77",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 10,
+        "TracingConfig": {
+          "Mode": "Active"
+        }
+      },
+      "DependsOn": [
+        "ApiAuthStackLambdaGETsessionServiceRoleDefaultPolicy86D99017",
+        "ApiAuthStackLambdaGETsessionServiceRoleA239BB77"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaGETsessionLogRetentionC0E95197": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "ApiAuthStackLambdaGETsession26A4EF37"
+              }
+            ]
+          ]
+        },
+        "SdkRetry": {
+          "maxRetries": 100
+        },
+        "RetentionInDays": 1
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackRouteGETsessionIntegrationGETsessionEDAF46DC": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiAuthStackApi91E32A8C"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ApiAuthStackLambdaGETsession26A4EF37",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackRouteGETsessionIntegrationGETsessionPermission753D8543": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiAuthStackLambdaGETsession26A4EF37",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:us-east-1:443216489626:",
+              {
+                "Ref": "ApiAuthStackApi91E32A8C"
+              },
+              "/*/*/session"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackRouteGETsession0B907DCC": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiAuthStackApi91E32A8C"
+        },
+        "AuthorizationType": "NONE",
+        "RouteKey": "GET /session",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "ApiAuthStackRouteGETsessionIntegrationGETsessionEDAF46DC"
+              }
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaPOSTloginServiceRoleD57DA9DB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaPOSTloginServiceRoleDefaultPolicy37BA23C3": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "ApiAuthStackLambdaPOSTloginServiceRoleDefaultPolicy37BA23C3",
+        "Roles": [
+          {
+            "Ref": "ApiAuthStackLambdaPOSTloginServiceRoleD57DA9DB"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaPOSTloginCBB57464": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "0ce28cdbcb0a2373132b41d59ebdfe6b13193e53c198b40489275a8942ddd084.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "citylending-intelligent-document",
+            "STAGE": "dev",
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "SST_APP": "citylending-intelligent-document",
+            "SST_STAGE": "dev",
+            "SST_SSM_PREFIX": "/sst/citylending-intelligent-document/dev/",
+            "SST_Parameter_value_ENV_JWT_SECRET": "shhhhh",
+            "SST_Table_tableName_MainTable": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputRefMainTable9B409A9CDFA857D7"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Handler": "packages/functions/src/auth/login.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "ApiAuthStackLambdaPOSTloginServiceRoleD57DA9DB",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 10,
+        "TracingConfig": {
+          "Mode": "Active"
+        }
+      },
+      "DependsOn": [
+        "ApiAuthStackLambdaPOSTloginServiceRoleDefaultPolicy37BA23C3",
+        "ApiAuthStackLambdaPOSTloginServiceRoleD57DA9DB"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackLambdaPOSTloginLogRetention82075E9A": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "ApiAuthStackLambdaPOSTloginCBB57464"
+              }
+            ]
+          ]
+        },
+        "SdkRetry": {
+          "maxRetries": 100
+        },
+        "RetentionInDays": 1
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackRoutePOSTloginIntegrationPOSTloginB4BA803D": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiAuthStackApi91E32A8C"
+        },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": {
+          "Fn::GetAtt": [
+            "ApiAuthStackLambdaPOSTloginCBB57464",
+            "Arn"
+          ]
+        },
+        "PayloadFormatVersion": "2.0"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackRoutePOSTloginIntegrationPOSTloginPermission2052AEAD": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "ApiAuthStackLambdaPOSTloginCBB57464",
+            "Arn"
+          ]
+        },
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              {
+                "Ref": "AWS::Partition"
+              },
+              ":execute-api:us-east-1:443216489626:",
+              {
+                "Ref": "ApiAuthStackApi91E32A8C"
+              },
+              "/*/*/login"
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackRoutePOSTlogin6AFCAFAF": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ApiAuthStackApi91E32A8C"
+        },
+        "AuthorizationType": "NONE",
+        "RouteKey": "POST /login",
+        "Target": {
+          "Fn::Join": [
+            "",
+            [
+              "integrations/",
+              {
+                "Ref": "ApiAuthStackRoutePOSTloginIntegrationPOSTloginB4BA803D"
+              }
+            ]
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "ApiAuthStackParameterurl4DFFA2BE": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/sst/citylending-intelligent-document/dev/Api/ApiAuthStack/url",
+        "Tags": {
+          "sst:app": "citylending-intelligent-document",
+          "sst:name": "citylending-intelligent-document",
+          "sst:stage": "dev"
+        },
+        "Type": "String",
+        "Value": {
+          "Fn::GetAtt": [
+            "ApiAuthStackApi91E32A8C",
+            "ApiEndpoint"
+          ]
+        }
+      }
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Timeout": 900,
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LambdaAuthorizerServiceRole801EAE1C": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LambdaAuthorizerServiceRoleDefaultPolicy5E4A8810": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LambdaAuthorizerServiceRoleDefaultPolicy5E4A8810",
+        "Roles": [
+          {
+            "Ref": "LambdaAuthorizerServiceRole801EAE1C"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LambdaAuthorizerB5870E9B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "d375af638aa145493aa71b04306bf5cfc9925f2b03c55d88cd5088aa856325a8.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "citylending-intelligent-document",
+            "STAGE": "dev",
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "SST_APP": "citylending-intelligent-document",
+            "SST_STAGE": "dev",
+            "SST_SSM_PREFIX": "/sst/citylending-intelligent-document/dev/",
+            "SST_Parameter_value_ENV_JWT_SECRET": "shhhhh",
+            "SST_Table_tableName_MainTable": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputRefMainTable9B409A9CDFA857D7"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Handler": "packages/functions/src/auth/authorizer.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaAuthorizerServiceRole801EAE1C",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 10,
+        "TracingConfig": {
+          "Mode": "Active"
+        }
+      },
+      "DependsOn": [
+        "LambdaAuthorizerServiceRoleDefaultPolicy5E4A8810",
+        "LambdaAuthorizerServiceRole801EAE1C"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LambdaAuthorizerLogRetentionDBB06225": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "LambdaAuthorizerB5870E9B"
+              }
+            ]
+          ]
+        },
+        "SdkRetry": {
+          "maxRetries": 100
+        },
+        "RetentionInDays": 1
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LambdaAuthorizerParameterfunctionNameB0E63FF4": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/sst/citylending-intelligent-document/dev/Function/LambdaAuthorizer/functionName",
+        "Tags": {
+          "sst:app": "citylending-intelligent-document",
+          "sst:name": "citylending-intelligent-document",
+          "sst:stage": "dev"
+        },
+        "Type": "String",
+        "Value": {
+          "Ref": "LambdaAuthorizerB5870E9B"
+        }
+      }
+    },
+    "SourcemapUploaderPolicy6476872E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectTagging",
+                "s3:PutObject",
+                "s3:PutObjectTagging"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::cdk-hnb659fds-assets-443216489626-us-east-1/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::sstbootstrap-useast124d14e4b-ynpse6ffr8lp/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "SourcemapUploaderPolicy6476872E",
+        "Roles": [
+          {
+            "Ref": "CustomResourceHandlerServiceRole41AEC181"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SourcemapUploader": {
+      "Type": "Custom::SourcemapUploader",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerE8FB56BA",
+            "Arn"
+          ]
+        },
+        "app": "citylending-intelligent-document",
+        "stage": "dev",
+        "tarBucket": "sstbootstrap-useast124d14e4b-ynpse6ffr8lp",
+        "srcBucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+        "sourcemaps": [
+          [
+            {
+              "Fn::GetAtt": [
+                "ApiAuthStackLambdaGETsession26A4EF37",
+                "Arn"
+              ]
+            },
+            "641481f0b05216a8d30d7e89608e270a824a589d63920b165cb9db65655bdbf6.map"
+          ],
+          [
+            {
+              "Fn::GetAtt": [
+                "ApiAuthStackLambdaPOSTloginCBB57464",
+                "Arn"
+              ]
+            },
+            "f3fa86e5531b667728e180df26728c3415273c64f9ac91869a99c0ed13db34b7.map"
+          ],
+          [
+            {
+              "Fn::GetAtt": [
+                "LambdaAuthorizerB5870E9B",
+                "Arn"
+              ]
+            },
+            "f7d528ff945cee157c2a46acfb8c84fa29c6ab17017f559db50fc129a152dfca.map"
+          ]
+        ]
+      },
+      "DependsOn": [
+        "SourcemapUploaderPolicy6476872E"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  },
+  "Outputs": {
+    "ApiEndpoint": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ApiAuthStackApi91E32A8C",
+          "ApiEndpoint"
+        ]
+      }
+    },
+    "ApiEndpointDomain": {
+      "Value": "No endpoint"
+    },
+    "ApiAuthorizer": {
+      "Value": {
+        "Ref": "LambdaAuthorizerB5870E9B"
+      }
+    },
+    "SSTMetadata": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "{\"app\":\"citylending-intelligent-document\",\"stage\":\"dev\",\"version\":\"2.43.7\",\"metadata\":[{\"id\":\"ApiAuthStack\",\"addr\":\"c8cd5b00c64a594aee27268e6e88bdffd3ba05f1a4\",\"stack\":\"dev-citylending-intelligent-document-AuthStack\",\"type\":\"Api\",\"data\":{\"graphql\":false,\"url\":\"https://",
+            {
+              "Ref": "ApiAuthStackApi91E32A8C"
+            },
+            ".execute-api.us-east-1.",
+            {
+              "Ref": "AWS::URLSuffix"
+            },
+            "/\",\"httpApiId\":\"",
+            {
+              "Ref": "ApiAuthStackApi91E32A8C"
+            },
+            "\",\"routes\":[{\"type\":\"function\",\"route\":\"GET /session\",\"fn\":{\"node\":\"c8b330e7996c381c826210279586e6b5b622fe76c8\",\"stack\":\"dev-citylending-intelligent-document-AuthStack\"}},{\"type\":\"function\",\"route\":\"POST /login\",\"fn\":{\"node\":\"c812c6b657f3d0ebc240bbe37df96e7f67ecd4c960\",\"stack\":\"dev-citylending-intelligent-document-AuthStack\"}}]}},{\"id\":\"Lambda_GET_--session\",\"addr\":\"c8b330e7996c381c826210279586e6b5b622fe76c8\",\"stack\":\"dev-citylending-intelligent-document-AuthStack\",\"type\":\"Function\",\"data\":{\"arn\":\"",
+            {
+              "Fn::GetAtt": [
+                "ApiAuthStackLambdaGETsession26A4EF37",
+                "Arn"
+              ]
+            },
+            "\",\"runtime\":\"nodejs18.x\",\"handler\":\"packages/functions/src/auth/session.handler\",\"localId\":\"c8b330e7996c381c826210279586e6b5b622fe76c8\",\"secrets\":[]}},{\"id\":\"Lambda_POST_--login\",\"addr\":\"c812c6b657f3d0ebc240bbe37df96e7f67ecd4c960\",\"stack\":\"dev-citylending-intelligent-document-AuthStack\",\"type\":\"Function\",\"data\":{\"arn\":\"",
+            {
+              "Fn::GetAtt": [
+                "ApiAuthStackLambdaPOSTloginCBB57464",
+                "Arn"
+              ]
+            },
+            "\",\"runtime\":\"nodejs18.x\",\"handler\":\"packages/functions/src/auth/login.handler\",\"localId\":\"c812c6b657f3d0ebc240bbe37df96e7f67ecd4c960\",\"secrets\":[]}},{\"id\":\"LambdaAuthorizer\",\"addr\":\"c82a1ddba6a147fa902b68119d4430d10297c00b0a\",\"stack\":\"dev-citylending-intelligent-document-AuthStack\",\"type\":\"Function\",\"data\":{\"arn\":\"",
+            {
+              "Fn::GetAtt": [
+                "LambdaAuthorizerB5870E9B",
+                "Arn"
+              ]
+            },
+            "\",\"runtime\":\"nodejs18.x\",\"handler\":\"packages/functions/src/auth/authorizer.handler\",\"localId\":\"c82a1ddba6a147fa902b68119d4430d10297c00b0a\",\"secrets\":[]}}]}"
+          ]
+        ]
+      }
+    },
+    "ExportsOutputFnGetAttLambdaAuthorizerB5870E9BArnF5B55917": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaAuthorizerB5870E9B",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttLambdaAuthorizerB5870E9BArnF5B55917"
+      }
+    },
+    "ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F": {
+      "Value": {
+        "Fn::GetAtt": [
+          "ApiAuthStackApi91E32A8C",
+          "ApiEndpoint"
+        ]
+      },
+      "Export": {
+        "Name": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

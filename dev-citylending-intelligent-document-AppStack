@@ -1,0 +1,2285 @@
+{
+  "Resources": {
+    "CustomResourceHandlerServiceRole41AEC181": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomResourceHandlerE8FB56BA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "cc4a0bc2ccc619b9669234aece5d3db388a0f541d4ad13794f77f406f1b30337.zip"
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerServiceRole41AEC181",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "CustomResourceHandlerServiceRole41AEC181"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackS3Bucket89D18EA3": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "PublicAccessBlockConfiguration": {
+          "BlockPublicAcls": true,
+          "BlockPublicPolicy": true,
+          "IgnorePublicAcls": true,
+          "RestrictPublicBuckets": true
+        },
+        "Tags": [
+          {
+            "Key": "aws-cdk:auto-delete-objects",
+            "Value": "true"
+          },
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackS3BucketPolicy118183D3": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": {
+          "Ref": "AppStackS3Bucket89D18EA3"
+        },
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Condition": {
+                "Bool": {
+                  "aws:SecureTransport": "false"
+                }
+              },
+              "Effect": "Deny",
+              "Principal": {
+                "AWS": "*"
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "AppStackS3Bucket89D18EA3",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "AppStackS3Bucket89D18EA3",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "s3:PutBucketPolicy",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*"
+              ],
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": {
+                  "Fn::GetAtt": [
+                    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+                    "Arn"
+                  ]
+                }
+              },
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "AppStackS3Bucket89D18EA3",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "AppStackS3Bucket89D18EA3",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Principal": {
+                "CanonicalUser": {
+                  "Fn::GetAtt": [
+                    "AppStackDistributionOrigin3S3Origin0C2ACE94",
+                    "S3CanonicalUserId"
+                  ]
+                }
+              },
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "AppStackS3Bucket89D18EA3",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackS3BucketAutoDeleteObjectsCustomResource218AAAC7": {
+      "Type": "Custom::S3AutoDeleteObjects",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F",
+            "Arn"
+          ]
+        },
+        "BucketName": {
+          "Ref": "AppStackS3Bucket89D18EA3"
+        }
+      },
+      "DependsOn": [
+        "AppStackS3BucketPolicy118183D3"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackCloudFrontFunction874EA781": {
+      "Type": "AWS::CloudFront::Function",
+      "Properties": {
+        "AutoPublish": true,
+        "FunctionCode": "function handler(o){var e=o.request;e.headers[\"x-forwarded-host\"]=e.headers.host;function r(i){var t=e.headers[i];if(t){if(t.multiValue)return t.multiValue.map(function(u){return u.value}).join(\",\");if(t.value)return t.value}return\"\"}var a=\"\";e.uri.startsWith(\"/_next/image\")?a=r(\"accept\"):a=r(\"rsc\")+r(\"next-router-prefetch\")+r(\"next-router-state-tree\")+r(\"next-url\")+r(\"x-prerender-revalidate\"),e.cookies.__prerender_bypass&&(a+=e.cookies.__prerender_bypass?e.cookies.__prerender_bypass.value:\"\");var d=require(\"crypto\"),n=d.createHash(\"md5\").update(a).digest(\"hex\");return e.headers[\"x-open-next-cache-key\"]={value:n},e.headers[\"cloudfront-viewer-city\"]&&(e.headers[\"x-open-next-city\"]=e.headers[\"cloudfront-viewer-city\"]),e.headers[\"cloudfront-viewer-country\"]&&(e.headers[\"x-open-next-country\"]=e.headers[\"cloudfront-viewer-country\"]),e.headers[\"cloudfront-viewer-region\"]&&(e.headers[\"x-open-next-region\"]=e.headers[\"cloudfront-viewer-region\"]),e.headers[\"cloudfront-viewer-latitude\"]&&(e.headers[\"x-open-next-latitude\"]=e.headers[\"cloudfront-viewer-latitude\"]),e.headers[\"cloudfront-viewer-longitude\"]&&(e.headers[\"x-open-next-longitude\"]=e.headers[\"cloudfront-viewer-longitude\"]),e}\n",
+        "FunctionConfig": {
+          "Comment": "us-east-1devcitylendingintelligepStackCloudFrontFunction8CFECDA1",
+          "Runtime": "cloudfront-js-1.0"
+        },
+        "Name": "us-east-1devcitylendingintelligepStackCloudFrontFunction8CFECDA1"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackS3AssetUploaderPolicyB61CD48E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "CustomResourceHandlerE8FB56BA",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "s3:ListBucket",
+                "s3:PutObject",
+                "s3:DeleteObject"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "AppStackS3Bucket89D18EA3",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "AppStackS3Bucket89D18EA3",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":s3:::cdk-hnb659fds-assets-443216489626-us-east-1/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackS3AssetUploaderPolicyB61CD48E",
+        "Roles": [
+          {
+            "Ref": "CustomResourceHandlerServiceRole41AEC181"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackS3AssetUploader55127CD0": {
+      "Type": "Custom::S3Uploader",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerE8FB56BA",
+            "Arn"
+          ]
+        },
+        "sources": [
+          {
+            "bucketName": "cdk-hnb659fds-assets-443216489626-us-east-1",
+            "objectKey": "c09fd6a432d0e390247a9470409ce8cc0f277600c002707361d0ca66acc54184.zip"
+          }
+        ],
+        "destinationBucketName": {
+          "Ref": "AppStackS3Bucket89D18EA3"
+        },
+        "textEncoding": "utf-8",
+        "fileOptions": [
+          {
+            "files": "**",
+            "ignore": "_assets/_next/**",
+            "cacheControl": "public,max-age=0,s-maxage=86400,stale-while-revalidate=8640"
+          },
+          {
+            "files": "_assets/_next/**",
+            "cacheControl": "public,max-age=31536000,immutable"
+          }
+        ],
+        "replaceValues": [
+          {
+            "files": "**/*.html",
+            "search": "{{ AUTH_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F"
+            }
+          },
+          {
+            "files": "**/*.js",
+            "search": "{{ AUTH_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F"
+            }
+          },
+          {
+            "files": "**/*.json",
+            "search": "{{ AUTH_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F"
+            }
+          },
+          {
+            "files": "**/*.html",
+            "search": "{{ CORE_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-ApiStack:ExportsOutputFnGetAttApiStackApi37FBEF5AApiEndpointF2049367"
+            }
+          },
+          {
+            "files": "**/*.js",
+            "search": "{{ CORE_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-ApiStack:ExportsOutputFnGetAttApiStackApi37FBEF5AApiEndpointF2049367"
+            }
+          },
+          {
+            "files": "**/*.json",
+            "search": "{{ CORE_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-ApiStack:ExportsOutputFnGetAttApiStackApi37FBEF5AApiEndpointF2049367"
+            }
+          }
+        ]
+      },
+      "DependsOn": [
+        "AppStackS3AssetUploaderPolicyB61CD48E"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackImageFunctionServiceRoleF49BC1F5": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackImageFunctionServiceRoleDefaultPolicyA898930A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:GetObject",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    {
+                      "Fn::GetAtt": [
+                        "AppStackS3Bucket89D18EA3",
+                        "Arn"
+                      ]
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackImageFunctionServiceRoleDefaultPolicyA898930A",
+        "Roles": [
+          {
+            "Ref": "AppStackImageFunctionServiceRoleF49BC1F5"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackImageFunction2EBC528A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "arm64"
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "9f61d8ca4f38fa5e68d1a78e00ff676f3031913bfc7e52370b6e15f133e5d4aa.zip"
+        },
+        "Description": "Next.js Image Optimization Function",
+        "Environment": {
+          "Variables": {
+            "BUCKET_NAME": {
+              "Ref": "AppStackS3Bucket89D18EA3"
+            },
+            "BUCKET_KEY_PREFIX": "_assets"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1536,
+        "Role": {
+          "Fn::GetAtt": [
+            "AppStackImageFunctionServiceRoleF49BC1F5",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 25
+      },
+      "DependsOn": [
+        "AppStackImageFunctionServiceRoleDefaultPolicyA898930A",
+        "AppStackImageFunctionServiceRoleF49BC1F5"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackImageFunctionLogRetentionD30781BE": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "AppStackImageFunction2EBC528A"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 3
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackImageFunctionFunctionUrlA2C6C21C": {
+      "Type": "AWS::Lambda::Url",
+      "Properties": {
+        "AuthType": "NONE",
+        "TargetFunctionArn": {
+          "Fn::GetAtt": [
+            "AppStackImageFunction2EBC528A",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackImageFunctioninvokefunctionurl50DD8DA9": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunctionUrl",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AppStackImageFunction2EBC528A",
+            "Arn"
+          ]
+        },
+        "FunctionUrlAuthType": "NONE",
+        "Principal": "*"
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionAssetReplacerPolicy18966146": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:PutObject"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":s3:::cdk-hnb659fds-assets-443216489626-us-east-1/*"
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackdefaultServerFunctionAssetReplacerPolicy18966146",
+        "Roles": [
+          {
+            "Ref": "CustomResourceHandlerServiceRole41AEC181"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionAssetReplacerA1D91BF8": {
+      "Type": "Custom::AssetReplacer",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerE8FB56BA",
+            "Arn"
+          ]
+        },
+        "bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+        "key": "ea4c3eb38f7079e5ff8dacc25cd9ac19bf71748a074477abd01ce38f776afdf4.zip",
+        "replacements": [
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ REGION }}",
+            "replace": "us-east-1"
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ STAGE }}",
+            "replace": "dev"
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ NEXT_PUBLIC_STAGE }}",
+            "replace": "dev"
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ AUTH_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F"
+            }
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ CORE_API_URL }}",
+            "replace": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-ApiStack:ExportsOutputFnGetAttApiStackApi37FBEF5AApiEndpointF2049367"
+            }
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ CACHE_BUCKET_NAME }}",
+            "replace": {
+              "Ref": "AppStackS3Bucket89D18EA3"
+            }
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ CACHE_BUCKET_KEY_PREFIX }}",
+            "replace": "_cache"
+          },
+          {
+            "files": "**/*.@(*js|json|html)",
+            "search": "{{ CACHE_BUCKET_REGION }}",
+            "replace": "us-east-1"
+          }
+        ]
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerPolicy18966146"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionServiceRoleDD53B0F3": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerA1D91BF8"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionServiceRoleDefaultPolicy505424FD": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject*",
+                "s3:GetBucket*",
+                "s3:List*",
+                "s3:DeleteObject*",
+                "s3:PutObject",
+                "s3:PutObjectLegalHold",
+                "s3:PutObjectRetention",
+                "s3:PutObjectTagging",
+                "s3:PutObjectVersionTagging",
+                "s3:Abort*"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "AppStackS3Bucket89D18EA3",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "AppStackS3Bucket89D18EA3",
+                          "Arn"
+                        ]
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Action": [
+                "sqs:SendMessage",
+                "sqs:GetQueueAttributes",
+                "sqs:GetQueueUrl"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AppStackRevalidationQueue56E39B99",
+                  "Arn"
+                ]
+              }
+            },
+            {
+              "Action": [
+                "dynamodb:BatchGetItem",
+                "dynamodb:GetRecords",
+                "dynamodb:GetShardIterator",
+                "dynamodb:Query",
+                "dynamodb:GetItem",
+                "dynamodb:Scan",
+                "dynamodb:ConditionCheckItem",
+                "dynamodb:BatchWriteItem",
+                "dynamodb:PutItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:DeleteItem",
+                "dynamodb:DescribeTable"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::GetAtt": [
+                    "AppStackRevalidationTable96BE80B3",
+                    "Arn"
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::GetAtt": [
+                          "AppStackRevalidationTable96BE80B3",
+                          "Arn"
+                        ]
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackdefaultServerFunctionServiceRoleDefaultPolicy505424FD",
+        "Roles": [
+          {
+            "Ref": "AppStackdefaultServerFunctionServiceRoleDD53B0F3"
+          }
+        ]
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerA1D91BF8"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionA2612D1B": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "arm64"
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "ea4c3eb38f7079e5ff8dacc25cd9ac19bf71748a074477abd01ce38f776afdf4.zip"
+        },
+        "Description": "Next.js Server",
+        "Environment": {
+          "Variables": {
+            "REGION": "us-east-1",
+            "STAGE": "dev",
+            "NEXT_PUBLIC_STAGE": "dev",
+            "AUTH_API_URL": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-AuthStack:ExportsOutputFnGetAttApiAuthStackApi91E32A8CApiEndpoint72B6E72F"
+            },
+            "CORE_API_URL": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-ApiStack:ExportsOutputFnGetAttApiStackApi37FBEF5AApiEndpointF2049367"
+            },
+            "CACHE_BUCKET_NAME": {
+              "Ref": "AppStackS3Bucket89D18EA3"
+            },
+            "CACHE_BUCKET_KEY_PREFIX": "_cache",
+            "CACHE_BUCKET_REGION": "us-east-1",
+            "SST_APP": "citylending-intelligent-document",
+            "SST_STAGE": "dev",
+            "SST_SSM_PREFIX": "/sst/citylending-intelligent-document/dev/",
+            "REVALIDATION_QUEUE_URL": {
+              "Ref": "AppStackRevalidationQueue56E39B99"
+            },
+            "REVALIDATION_QUEUE_REGION": "us-east-1",
+            "CACHE_DYNAMO_TABLE": {
+              "Ref": "AppStackRevalidationTable96BE80B3"
+            }
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "AppStackdefaultServerFunctionServiceRoleDD53B0F3",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 10
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerA1D91BF8",
+        "AppStackdefaultServerFunctionServiceRoleDefaultPolicy505424FD",
+        "AppStackdefaultServerFunctionServiceRoleDD53B0F3"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionLogRetention9E5969DB": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "AppStackdefaultServerFunctionA2612D1B"
+              }
+            ]
+          ]
+        },
+        "RetentionInDays": 3
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerA1D91BF8"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctionFunctionUrlE0463964": {
+      "Type": "AWS::Lambda::Url",
+      "Properties": {
+        "AuthType": "NONE",
+        "InvokeMode": "BUFFERED",
+        "TargetFunctionArn": {
+          "Fn::GetAtt": [
+            "AppStackdefaultServerFunctionA2612D1B",
+            "Arn"
+          ]
+        }
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerA1D91BF8"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackdefaultServerFunctioninvokefunctionurl988FBD94": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunctionUrl",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AppStackdefaultServerFunctionA2612D1B",
+            "Arn"
+          ]
+        },
+        "FunctionUrlAuthType": "NONE",
+        "Principal": "*"
+      },
+      "DependsOn": [
+        "AppStackdefaultServerFunctionAssetReplacerA1D91BF8"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackServerCacheC05EAAEE": {
+      "Type": "AWS::CloudFront::CachePolicy",
+      "Properties": {
+        "CachePolicyConfig": {
+          "Comment": "SST server response cache policy",
+          "DefaultTTL": 0,
+          "MaxTTL": 31536000,
+          "MinTTL": 0,
+          "Name": "devcitylendingintelligentdocumentAppStackServerCacheEBC4F721-us-east-1",
+          "ParametersInCacheKeyAndForwardedToOrigin": {
+            "CookiesConfig": {
+              "CookieBehavior": "none"
+            },
+            "EnableAcceptEncodingBrotli": true,
+            "EnableAcceptEncodingGzip": true,
+            "HeadersConfig": {
+              "HeaderBehavior": "whitelist",
+              "Headers": [
+                "x-open-next-cache-key"
+              ]
+            },
+            "QueryStringsConfig": {
+              "QueryStringBehavior": "all"
+            }
+          }
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackDistributionOrigin3S3Origin0C2ACE94": {
+      "Type": "AWS::CloudFront::CloudFrontOriginAccessIdentity",
+      "Properties": {
+        "CloudFrontOriginAccessIdentityConfig": {
+          "Comment": "Identity for devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackDistribution7A01B6AE": {
+      "Type": "AWS::CloudFront::Distribution",
+      "Properties": {
+        "DistributionConfig": {
+          "Aliases": [],
+          "CacheBehaviors": [
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE"
+              ],
+              "CachePolicyId": {
+                "Ref": "AppStackServerCacheC05EAAEE"
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "LambdaFunctionAssociations": [],
+              "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+              "PathPattern": "_next/image*",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin235087816",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS",
+                "PUT",
+                "PATCH",
+                "POST",
+                "DELETE"
+              ],
+              "CachePolicyId": {
+                "Ref": "AppStackServerCacheC05EAAEE"
+              },
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "LambdaFunctionAssociations": [],
+              "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+              "PathPattern": "_next/data/*",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin164664473",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "BUILD_ID",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "_next/*",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "favicon.ico",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "images/*",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "next.svg",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "profileImage.png",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            },
+            {
+              "AllowedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+              "CachedMethods": [
+                "GET",
+                "HEAD",
+                "OPTIONS"
+              ],
+              "Compress": true,
+              "FunctionAssociations": [
+                {
+                  "EventType": "viewer-request",
+                  "FunctionARN": {
+                    "Fn::GetAtt": [
+                      "AppStackCloudFrontFunction874EA781",
+                      "FunctionARN"
+                    ]
+                  }
+                }
+              ],
+              "PathPattern": "vercel.svg",
+              "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "ViewerProtocolPolicy": "redirect-to-https"
+            }
+          ],
+          "DefaultCacheBehavior": {
+            "AllowedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS",
+              "PUT",
+              "PATCH",
+              "POST",
+              "DELETE"
+            ],
+            "CachePolicyId": {
+              "Ref": "AppStackServerCacheC05EAAEE"
+            },
+            "CachedMethods": [
+              "GET",
+              "HEAD",
+              "OPTIONS"
+            ],
+            "Compress": true,
+            "FunctionAssociations": [
+              {
+                "EventType": "viewer-request",
+                "FunctionARN": {
+                  "Fn::GetAtt": [
+                    "AppStackCloudFrontFunction874EA781",
+                    "FunctionARN"
+                  ]
+                }
+              }
+            ],
+            "LambdaFunctionAssociations": [],
+            "OriginRequestPolicyId": "b689b0a8-53d0-40ab-baf2-68738e2966ac",
+            "TargetOriginId": "devcitylendingintelligentdocumentAppStackDistributionOrigin164664473",
+            "ViewerProtocolPolicy": "redirect-to-https"
+          },
+          "DefaultRootObject": "",
+          "Enabled": true,
+          "HttpVersion": "http2",
+          "IPV6Enabled": true,
+          "Origins": [
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only",
+                "OriginReadTimeout": 10,
+                "OriginSSLProtocols": [
+                  "TLSv1.2"
+                ]
+              },
+              "DomainName": {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          1,
+                          {
+                            "Fn::Split": [
+                              "//",
+                              {
+                                "Fn::GetAtt": [
+                                  "AppStackdefaultServerFunctionFunctionUrlE0463964",
+                                  "FunctionUrl"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "Id": "devcitylendingintelligentdocumentAppStackDistributionOrigin164664473"
+            },
+            {
+              "CustomOriginConfig": {
+                "OriginProtocolPolicy": "https-only",
+                "OriginSSLProtocols": [
+                  "TLSv1.2"
+                ]
+              },
+              "DomainName": {
+                "Fn::Select": [
+                  0,
+                  {
+                    "Fn::Split": [
+                      "/",
+                      {
+                        "Fn::Select": [
+                          1,
+                          {
+                            "Fn::Split": [
+                              "//",
+                              {
+                                "Fn::GetAtt": [
+                                  "AppStackImageFunctionFunctionUrlA2C6C21C",
+                                  "FunctionUrl"
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              },
+              "Id": "devcitylendingintelligentdocumentAppStackDistributionOrigin235087816"
+            },
+            {
+              "DomainName": {
+                "Fn::GetAtt": [
+                  "AppStackS3Bucket89D18EA3",
+                  "RegionalDomainName"
+                ]
+              },
+              "Id": "devcitylendingintelligentdocumentAppStackDistributionOrigin3771813B5",
+              "OriginPath": "/_assets",
+              "S3OriginConfig": {
+                "OriginAccessIdentity": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "origin-access-identity/cloudfront/",
+                      {
+                        "Ref": "AppStackDistributionOrigin3S3Origin0C2ACE94"
+                      }
+                    ]
+                  ]
+                }
+              }
+            }
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackServerFunctionInvalidatorPolicy0F611E2A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "cloudfront:CreateInvalidation",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudfront::443216489626:distribution/",
+                    {
+                      "Ref": "AppStackDistribution7A01B6AE"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackServerFunctionInvalidatorPolicy0F611E2A",
+        "Roles": [
+          {
+            "Ref": "AppStackdefaultServerFunctionServiceRoleDD53B0F3"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackCloudFrontInvalidatorPolicy19232B1A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "cloudfront:GetInvalidation",
+                "cloudfront:CreateInvalidation"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":cloudfront::443216489626:distribution/",
+                    {
+                      "Ref": "AppStackDistribution7A01B6AE"
+                    }
+                  ]
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackCloudFrontInvalidatorPolicy19232B1A",
+        "Roles": [
+          {
+            "Ref": "CustomResourceHandlerServiceRole41AEC181"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackCloudFrontInvalidator0E6E4442": {
+      "Type": "Custom::CloudFrontInvalidator",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerE8FB56BA",
+            "Arn"
+          ]
+        },
+        "version": "2HEQp1w1RJlkuy6upkqxU",
+        "distributionId": {
+          "Ref": "AppStackDistribution7A01B6AE"
+        },
+        "paths": [
+          "/*"
+        ],
+        "wait": false
+      },
+      "DependsOn": [
+        "AppStackCloudFrontInvalidatorPolicy19232B1A",
+        "AppStackS3AssetUploader55127CD0"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackWarmerFunctionServiceRole3E06C478": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackWarmerFunctionEE0E0D68": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "3469506d423159669e803fb4f24bd244d4be4a9499bd4ea6ee7e9e3d65867509.zip"
+        },
+        "Description": "SSR warmer",
+        "Environment": {
+          "Variables": {
+            "WARM_PARAMS": "[]"
+          }
+        },
+        "Handler": "index.handler",
+        "MemorySize": 128,
+        "Role": {
+          "Fn::GetAtt": [
+            "AppStackWarmerFunctionServiceRole3E06C478",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "AppStackWarmerFunctionServiceRole3E06C478"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackWarmerRule7B99BE33": {
+      "Type": "AWS::Events::Rule",
+      "Properties": {
+        "ScheduleExpression": "rate(5 minutes)",
+        "State": "ENABLED",
+        "Targets": [
+          {
+            "Arn": {
+              "Fn::GetAtt": [
+                "AppStackWarmerFunctionEE0E0D68",
+                "Arn"
+              ]
+            },
+            "Id": "Target0",
+            "RetryPolicy": {
+              "MaximumRetryAttempts": 0
+            }
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackWarmerRuleAllowEventRuledevcitylendingintelligentdocumentAppStackWarmerFunctionF0ECC0AC40C30183": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "Action": "lambda:InvokeFunction",
+        "FunctionName": {
+          "Fn::GetAtt": [
+            "AppStackWarmerFunctionEE0E0D68",
+            "Arn"
+          ]
+        },
+        "Principal": "events.amazonaws.com",
+        "SourceArn": {
+          "Fn::GetAtt": [
+            "AppStackWarmerRule7B99BE33",
+            "Arn"
+          ]
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackPrewarmerPolicy565CF294": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "lambda:InvokeFunction",
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AppStackWarmerFunctionEE0E0D68",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackPrewarmerPolicy565CF294",
+        "Roles": [
+          {
+            "Ref": "CustomResourceHandlerServiceRole41AEC181"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackPrewarmer07E93522": {
+      "Type": "Custom::FunctionInvoker",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerE8FB56BA",
+            "Arn"
+          ]
+        },
+        "version": "1744309280134",
+        "functionName": {
+          "Ref": "AppStackWarmerFunctionEE0E0D68"
+        }
+      },
+      "DependsOn": [
+        "AppStackPrewarmerPolicy565CF294"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackRevalidationQueue56E39B99": {
+      "Type": "AWS::SQS::Queue",
+      "Properties": {
+        "FifoQueue": true,
+        "ReceiveMessageWaitTimeSeconds": 20,
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackRevalidationFunctionServiceRole4E04E385": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackRevalidationFunctionServiceRoleDefaultPolicyB56D2F2A": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "sqs:ReceiveMessage",
+                "sqs:ChangeMessageVisibility",
+                "sqs:GetQueueUrl",
+                "sqs:DeleteMessage",
+                "sqs:GetQueueAttributes"
+              ],
+              "Effect": "Allow",
+              "Resource": {
+                "Fn::GetAtt": [
+                  "AppStackRevalidationQueue56E39B99",
+                  "Arn"
+                ]
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "AppStackRevalidationFunctionServiceRoleDefaultPolicyB56D2F2A",
+        "Roles": [
+          {
+            "Ref": "AppStackRevalidationFunctionServiceRole4E04E385"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackRevalidationFunctionB48C731A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "954c1b07bb800005a3d4222b2362a381fceabb18690a0d42f9df9bf73781a522.zip"
+        },
+        "Description": "Next.js revalidator",
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "AppStackRevalidationFunctionServiceRole4E04E385",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 30
+      },
+      "DependsOn": [
+        "AppStackRevalidationFunctionServiceRoleDefaultPolicyB56D2F2A",
+        "AppStackRevalidationFunctionServiceRole4E04E385"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackRevalidationFunctionSqsEventSourcedevcitylendingintelligentdocumentAppStackRevalidationQueueB4972A1694A2D958": {
+      "Type": "AWS::Lambda::EventSourceMapping",
+      "Properties": {
+        "BatchSize": 5,
+        "EventSourceArn": {
+          "Fn::GetAtt": [
+            "AppStackRevalidationQueue56E39B99",
+            "Arn"
+          ]
+        },
+        "FunctionName": {
+          "Ref": "AppStackRevalidationFunctionB48C731A"
+        }
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackRevalidationTable96BE80B3": {
+      "Type": "AWS::DynamoDB::GlobalTable",
+      "Properties": {
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "tag",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "path",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "revalidatedAt",
+            "AttributeType": "N"
+          }
+        ],
+        "BillingMode": "PAY_PER_REQUEST",
+        "GlobalSecondaryIndexes": [
+          {
+            "IndexName": "revalidate",
+            "KeySchema": [
+              {
+                "AttributeName": "path",
+                "KeyType": "HASH"
+              },
+              {
+                "AttributeName": "revalidatedAt",
+                "KeyType": "RANGE"
+              }
+            ],
+            "Projection": {
+              "ProjectionType": "ALL"
+            }
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "tag",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "path",
+            "KeyType": "RANGE"
+          }
+        ],
+        "Replicas": [
+          {
+            "GlobalSecondaryIndexes": [
+              {
+                "IndexName": "revalidate"
+              }
+            ],
+            "PointInTimeRecoverySpecification": {
+              "PointInTimeRecoveryEnabled": true
+            },
+            "Region": "us-east-1"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "AppStackParameterurl652DD09F": {
+      "Type": "AWS::SSM::Parameter",
+      "Properties": {
+        "Name": "/sst/citylending-intelligent-document/dev/NextjsSite/AppStack/url",
+        "Tags": {
+          "sst:app": "citylending-intelligent-document",
+          "sst:name": "citylending-intelligent-document",
+          "sst:stage": "dev"
+        },
+        "Type": "String",
+        "Value": {
+          "Fn::Join": [
+            "",
+            [
+              "https://",
+              {
+                "Fn::GetAtt": [
+                  "AppStackDistribution7A01B6AE",
+                  "DomainName"
+                ]
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ]
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Sub": "arn:${AWS::Partition}:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomS3AutoDeleteObjectsCustomResourceProviderHandler9D90184F": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "2eb6a831b107939f63cfebf68e6316e1a40f79fc99cae0fee9b333bac8d29bc4.zip"
+        },
+        "Timeout": 900,
+        "MemorySize": 128,
+        "Handler": "index.handler",
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Description": {
+          "Fn::Join": [
+            "",
+            [
+              "Lambda function for auto-deleting objects in ",
+              {
+                "Ref": "AppStackS3Bucket89D18EA3"
+              },
+              " S3 bucket."
+            ]
+          ]
+        }
+      },
+      "DependsOn": [
+        "CustomS3AutoDeleteObjectsCustomResourceProviderRole3B1BD092"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Timeout": 900,
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  },
+  "Outputs": {
+    "URL": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "AppStackDistribution7A01B6AE",
+                "DomainName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "URLCUSTOMDOMAIN": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Fn::GetAtt": [
+                "AppStackDistribution7A01B6AE",
+                "DomainName"
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "SSTMetadata": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "{\"app\":\"citylending-intelligent-document\",\"stage\":\"dev\",\"version\":\"2.43.7\",\"metadata\":[{\"id\":\"AppStack\",\"addr\":\"c804f97502300fe184081696fad24d66b2bdd43c98\",\"stack\":\"dev-citylending-intelligent-document-AppStack\",\"type\":\"NextjsSite\",\"data\":{\"mode\":\"deployed\",\"path\":\"packages/dashboard\",\"runtime\":\"nodejs18.x\",\"url\":\"https://",
+            {
+              "Fn::GetAtt": [
+                "AppStackDistribution7A01B6AE",
+                "DomainName"
+              ]
+            },
+            "\",\"edge\":false,\"server\":\"",
+            {
+              "Fn::GetAtt": [
+                "AppStackdefaultServerFunctionA2612D1B",
+                "Arn"
+              ]
+            },
+            "\",\"secrets\":[]}},{\"id\":\"defaultServerFunction\",\"addr\":\"c8b986033d35bf398e5994d1b80eb8dc104449b8f0\",\"stack\":\"dev-citylending-intelligent-document-AppStack\",\"type\":\"Function\",\"data\":{\"arn\":\"",
+            {
+              "Fn::GetAtt": [
+                "AppStackdefaultServerFunctionA2612D1B",
+                "Arn"
+              ]
+            },
+            "\",\"runtime\":\"nodejs18.x\",\"handler\":\"index.handler\",\"missingSourcemap\":true,\"localId\":\"c8b986033d35bf398e5994d1b80eb8dc104449b8f0\",\"secrets\":[]}}]}"
+          ]
+        ]
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}

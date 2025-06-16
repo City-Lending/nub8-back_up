@@ -1,0 +1,549 @@
+{
+  "Resources": {
+    "CustomResourceHandlerServiceRole41AEC181": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "CustomResourceHandlerE8FB56BA": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "43e0e5546ed70763462be699f1e43d98d082dabb4e37a32c3d858650c19cf053.zip"
+        },
+        "Handler": "index.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerServiceRole41AEC181",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 900
+      },
+      "DependsOn": [
+        "CustomResourceHandlerServiceRole41AEC181"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "NotificationBuckettranscriptNotificationServiceRoleB093F4FE": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "NotificationBuckettranscriptNotificationServiceRoleDefaultPolicy72913E63": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "xray:PutTraceSegments",
+                "xray:PutTelemetryRecords"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "s3:*",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "bedrock:*",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "states:*",
+              "Effect": "Allow",
+              "Resource": "*"
+            },
+            {
+              "Action": "dynamodb:*",
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      {
+                        "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputFnGetAttMainTable9B409A9CArnDCC5EE42"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "NotificationBuckettranscriptNotificationServiceRoleDefaultPolicy72913E63",
+        "Roles": [
+          {
+            "Ref": "NotificationBuckettranscriptNotificationServiceRoleB093F4FE"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "NotificationBuckettranscriptNotificationA46DC436": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Architectures": [
+          "x86_64"
+        ],
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "fc7883183449fe729e5bf192f7246989abfc32461d69e75904dac37bb61aed9d.zip"
+        },
+        "Environment": {
+          "Variables": {
+            "APP_NAME": "citylending-intelligent-document",
+            "STAGE": "dev",
+            "STATE_MACHINE_ARN": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-DocProcessingWorkflow:ExportsOutputRefDocProcessingWorkflowC21A57E75603FD7D"
+            },
+            "API_URL": "core.dev-api.app.citylendinginc.com",
+            "AWS_NODEJS_CONNECTION_REUSE_ENABLED": "1",
+            "SST_APP": "citylending-intelligent-document",
+            "SST_STAGE": "dev",
+            "SST_SSM_PREFIX": "/sst/citylending-intelligent-document/dev/",
+            "SST_Table_tableName_MainTable": {
+              "Fn::ImportValue": "dev-citylending-intelligent-document-DatabaseStack:ExportsOutputRefMainTable9B409A9CDFA857D7"
+            }
+          }
+        },
+        "EphemeralStorage": {
+          "Size": 512
+        },
+        "Handler": "packages/functions/src/workflow/trigger.handler",
+        "MemorySize": 1024,
+        "Role": {
+          "Fn::GetAtt": [
+            "NotificationBuckettranscriptNotificationServiceRoleB093F4FE",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs18.x",
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ],
+        "Timeout": 10,
+        "TracingConfig": {
+          "Mode": "Active"
+        }
+      },
+      "DependsOn": [
+        "NotificationBuckettranscriptNotificationServiceRoleDefaultPolicy72913E63",
+        "NotificationBuckettranscriptNotificationServiceRoleB093F4FE"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "NotificationBuckettranscriptNotificationLogRetention0427B578": {
+      "Type": "Custom::LogRetention",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A",
+            "Arn"
+          ]
+        },
+        "LogGroupName": {
+          "Fn::Join": [
+            "",
+            [
+              "/aws/lambda/",
+              {
+                "Ref": "NotificationBuckettranscriptNotificationA46DC436"
+              }
+            ]
+          ]
+        },
+        "SdkRetry": {
+          "maxRetries": 100
+        },
+        "RetentionInDays": 1
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Action": "sts:AssumeRole",
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              }
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "ManagedPolicyArns": [
+          {
+            "Fn::Join": [
+              "",
+              [
+                "arn:",
+                {
+                  "Ref": "AWS::Partition"
+                },
+                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+              ]
+            ]
+          }
+        ],
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "logs:PutRetentionPolicy",
+                "logs:DeleteRetentionPolicy"
+              ],
+              "Effect": "Allow",
+              "Resource": "*"
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "Roles": [
+          {
+            "Ref": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aFD4BFC8A": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Handler": "index.handler",
+        "Runtime": "nodejs18.x",
+        "Timeout": 900,
+        "Code": {
+          "S3Bucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+          "S3Key": "4e26bf2d0a26f2097fb2b261f22bb51e3f6b4b52635777b1e54edbd8e2d58c35.zip"
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB",
+            "Arn"
+          ]
+        },
+        "Tags": [
+          {
+            "Key": "sst:app",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:name",
+            "Value": "citylending-intelligent-document"
+          },
+          {
+            "Key": "sst:stage",
+            "Value": "dev"
+          }
+        ]
+      },
+      "DependsOn": [
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRoleDefaultPolicyADDA7DEB",
+        "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8aServiceRole9741ECFB"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SourcemapUploaderPolicy6476872E": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": [
+                "s3:GetObject",
+                "s3:GetObjectTagging",
+                "s3:PutObject",
+                "s3:PutObjectTagging"
+              ],
+              "Effect": "Allow",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::cdk-hnb659fds-assets-443216489626-us-east-1/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":s3:::sstbootstrap-useast124d14e4b-ynpse6ffr8lp/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ],
+          "Version": "2012-10-17"
+        },
+        "PolicyName": "SourcemapUploaderPolicy6476872E",
+        "Roles": [
+          {
+            "Ref": "CustomResourceHandlerServiceRole41AEC181"
+          }
+        ]
+      },
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    },
+    "SourcemapUploader": {
+      "Type": "Custom::SourcemapUploader",
+      "Properties": {
+        "ServiceToken": {
+          "Fn::GetAtt": [
+            "CustomResourceHandlerE8FB56BA",
+            "Arn"
+          ]
+        },
+        "app": "citylending-intelligent-document",
+        "stage": "dev",
+        "tarBucket": "sstbootstrap-useast124d14e4b-ynpse6ffr8lp",
+        "srcBucket": "cdk-hnb659fds-assets-443216489626-us-east-1",
+        "sourcemaps": [
+          [
+            {
+              "Fn::GetAtt": [
+                "NotificationBuckettranscriptNotificationA46DC436",
+                "Arn"
+              ]
+            },
+            "412409b8abed9e16c2dee1a1f1d1fdd71762cbffa58210b862629e590dd37267.map"
+          ]
+        ]
+      },
+      "DependsOn": [
+        "SourcemapUploaderPolicy6476872E"
+      ],
+      "UpdateReplacePolicy": "Delete",
+      "DeletionPolicy": "Delete"
+    }
+  },
+  "Outputs": {
+    "SSTMetadata": {
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "{\"app\":\"citylending-intelligent-document\",\"stage\":\"dev\",\"version\":\"2.43.7\",\"metadata\":[{\"id\":\"Notification_Bucket_transcriptNotification\",\"addr\":\"c8d227ae59dae40f736da1f4019d89538e87baf6e5\",\"stack\":\"dev-citylending-intelligent-document-BucketNotificationStack\",\"type\":\"Function\",\"data\":{\"arn\":\"",
+            {
+              "Fn::GetAtt": [
+                "NotificationBuckettranscriptNotificationA46DC436",
+                "Arn"
+              ]
+            },
+            "\",\"runtime\":\"nodejs18.x\",\"handler\":\"packages/functions/src/workflow/trigger.handler\",\"localId\":\"c8d227ae59dae40f736da1f4019d89538e87baf6e5\",\"secrets\":[]}}]}"
+          ]
+        ]
+      }
+    },
+    "ExportsOutputFnGetAttNotificationBuckettranscriptNotificationA46DC436ArnF496A08D": {
+      "Value": {
+        "Fn::GetAtt": [
+          "NotificationBuckettranscriptNotificationA46DC436",
+          "Arn"
+        ]
+      },
+      "Export": {
+        "Name": "dev-citylending-intelligent-document-BucketNotificationStack:ExportsOutputFnGetAttNotificationBuckettranscriptNotificationA46DC436ArnF496A08D"
+      }
+    }
+  },
+  "Parameters": {
+    "BootstrapVersion": {
+      "Type": "AWS::SSM::Parameter::Value<String>",
+      "Default": "/cdk-bootstrap/hnb659fds/version",
+      "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+    }
+  },
+  "Rules": {
+    "CheckBootstrapVersion": {
+      "Assertions": [
+        {
+          "Assert": {
+            "Fn::Not": [
+              {
+                "Fn::Contains": [
+                  [
+                    "1",
+                    "2",
+                    "3",
+                    "4",
+                    "5"
+                  ],
+                  {
+                    "Ref": "BootstrapVersion"
+                  }
+                ]
+              }
+            ]
+          },
+          "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+        }
+      ]
+    }
+  }
+}
